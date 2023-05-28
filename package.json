@@ -16,11 +16,16 @@
     "eslint": "8.41.0",
     "eslint-config-next": "13.4.3",
     "firebase": "^9.22.0",
+    "framer-motion": "^10.12.16",
+    "leaflet": "^1.9.4",
     "next": "13.4.3",
     "postcss": "8.4.23",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-hook-form": "^7.44.1",
+    "react-leaflet": "^4.2.1",
     "tailwindcss": "3.3.2",
-    "typescript": "5.0.4"
+    "typescript": "5.0.4",
+    "zustand": "^4.3.8"
   }
 }
