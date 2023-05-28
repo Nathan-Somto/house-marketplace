@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@layer base {
+  h1 {
+    @apply text-3xl font-bold;
+  }
+  h2 {
+    @apply text-2xl font-semibold;
+  }
+  h3 {
+    @apply text-xl font-medium;
+  }
+}
+@layer components {
+  .primary-btn {
+    @apply cursor-pointer bg-primary-green rounded-2xl py-[0.85rem] px-8 text-white text-xl flex items-center justify-center;
+  }
+}
