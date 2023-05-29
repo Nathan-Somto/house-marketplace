@@ -32,6 +32,7 @@ function signIn() {
           alt={"sign in home"}
           width={400}
           height={400}
+          priority
         />
       </aside>
       <form
@@ -124,7 +125,7 @@ function signIn() {
         <GoogleAuth pathname="in" />
         <p className="text-gray-600">
           Don't have an Account{" "}
-          <Link href="/signUp" className="text-primary-green font-semibold">
+          <Link href="/signup" className="text-primary-green font-semibold">
             Sign Up
           </Link>
         </p>

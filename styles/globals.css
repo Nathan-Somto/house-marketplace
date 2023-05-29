@@ -17,6 +17,12 @@
     @apply cursor-pointer bg-primary-green rounded-2xl py-[0.85rem] px-8 text-white text-xl flex items-center justify-center;
   }
   .input-box{
-    @apply w-full mt-2 outline-none focus:border-2 active:border-2 border-gray-400 shadow-[2px_2px_5px_rgba(0,0,0,0.25)]  block rounded-[14px] py-4 pl-12 pr-6 bg-primary-white;
+    @apply w-full my-2 outline-none focus:border-2 active:border-2 border-gray-400 shadow-[2px_2px_5px_rgba(0,0,0,0.25)]  block rounded-[14px] py-4 pl-12 pr-6 bg-primary-white;
+  }
+  .input-invalid{
+    @apply text-red-500 placeholder:text-red-500 border-red-500  border-2;
+  }
+  .input-error{
+    @apply text-red-500  font-medium;
   }
 }
