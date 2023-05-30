@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import capitalize from "@/utils/capitalize";
+import Link from "next/link";
 
 function signup() {
   const {
@@ -206,6 +207,12 @@ function signup() {
           </button>
         </div>
         <GoogleAuth pathname={"up"} />
+        <p className="text-gray-600">
+          Have an Account?{" "}
+          <Link href="/signin" className="text-primary-green font-semibold">
+            Sign In
+          </Link>
+        </p>
       </form>
     </main>
   );

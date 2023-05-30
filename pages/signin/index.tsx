@@ -25,8 +25,8 @@ function signIn() {
     }
   }
   return (
-    <main className="bg-primary-grey grid grid-cols-1 min-h-screen lg:grid-cols-2 lg:py-12 lg:gap-[10%]">
-      <aside className="bg-primary-green rounded-tr-[10%] rounded-br-[10%] lg:flex items-center hidden  justify-center relative max-h-screen">
+    <main className="bg-primary-grey grid grid-cols-1 min-h-screen lg:grid-cols-2  lg:gap-[10%]">
+      <aside className="bg-primary-green rounded-tr-[10%] rounded-br-[10%] lg:flex items-center hidden  justify-center relative min-h-screen">
         <Image
           src={"/signin-home.png"}
           alt={"sign in home"}
