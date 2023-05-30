@@ -1,5 +1,7 @@
 import Image from 'next/image';
+import {useRouter} from 'next/router';
 function HomePage() {
+    const router = useRouter();
   return (
    <main className='h-screen relative'>
     <figure className="h-screen w-full">
@@ -21,7 +23,7 @@ function HomePage() {
             here we make finding your dream home
             easy and painless.
         </p>
-        <button className='bg-primary-green text-gray-50 sm:text-lg border-primary-green border-[0.15rem] transition-all ease-in duration-300  font-semibold px-8 rounded-3xl py-3'>
+        <button onClick={()=> router.push('/signup')} className='bg-primary-green text-gray-50 sm:text-lg border-primary-green border-[0.15rem] transition-all ease-in duration-300  font-semibold px-8 rounded-3xl py-3'>
             Get Started Today
         </button>
     </section>
