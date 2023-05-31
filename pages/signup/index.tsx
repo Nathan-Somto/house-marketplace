@@ -12,6 +12,7 @@ import useAuthStore from "@/store/useAuthStore";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
+import Spinner from "@/components/Spinner";
 
 function signup() {
   const router = useRouter();
@@ -24,12 +25,15 @@ function signup() {
     resolver: yupResolver(signupSchema),
     mode: "onTouched",
   });
+  const [loading,setLoading] = useState(false);
   const [togglePassword, setTogglePassword] = useState(false);
   const [togglePassword2, setTogglePassword2] = useState(false);
   async function onSubmit(data: signupType) {
+    setLoading(true);
     let { firstName, password, email } = data;
     firstName = capitalize(firstName);
     try {
+
       // create the user in firebase.
       const cred = await createUserWithEmailAndPassword(auth, email, password);
       // update the users profile in firebase.
@@ -44,6 +48,7 @@ function signup() {
       });
       // login in our user in our zustand state.
       login(auth.currentUser as User);
+      
       // replace the existing route to that of the explore page.
       router.replace("/explore");
     } catch (err) {
@@ -51,8 +56,13 @@ function signup() {
       if (err instanceof Error) message = err.message;
       toast.error(message);
     }
+    finally{
+      setLoading(false);
+    }
   }
   return (
+    <>
+   
     <main className="bg-primary-grey grid grid-cols-1 min-h-screen lg:grid-cols-2  lg:gap-[10%]">
       <aside className="bg-primary-green rounded-tr-[10%] rounded-br-[10%] lg:flex items-center hidden  justify-center relative min-h-screen">
         <Image
@@ -242,6 +252,8 @@ function signup() {
         </p>
       </form>
     </main>
+    {loading && <Spinner/>}
+    </>
   );
 }
 

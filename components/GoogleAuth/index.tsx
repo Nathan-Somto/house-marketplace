@@ -22,9 +22,9 @@ function GoogleAuth({pathname}:props) {
         // add their details to firestore if the user doesn't exist.
         if(!userSnapshot.exists()){
           await setDoc(userRef,{
-            name:cred.user.displayName,
+            firstName:cred.user.displayName,
             email:cred.user.email,
-            timeStamp:serverTimestamp()
+            timestamp:serverTimestamp()
           });
         }
         // login the user in our global store.
@@ -43,7 +43,7 @@ function GoogleAuth({pathname}:props) {
   return (
     <div className="flex flex-col  space-y-3">
     <small className="text-gray-500 text-sm">sign {pathname} with</small>
-    <button onClick={handleGoogleClick} className="relative h-[50px] w-[50px] hover:scale-110 duration-300 ease-out flex items-center justify-center rounded-full shadow-lg bg-[#fff] p-3">
+    <button onClick={handleGoogleClick} type="button" className="relative h-[50px] w-[50px] hover:scale-110 duration-300 ease-out flex items-center justify-center rounded-full shadow-lg bg-[#fff] p-3">
       <Image
         src="/svg/googleIcon.svg"
         alt="google icon"

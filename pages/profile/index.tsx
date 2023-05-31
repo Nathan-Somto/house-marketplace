@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 type userData = {
   name: string;
   email: string;
+  firstName?:string;
 };
 type Optional<T> = {
   [P in keyof T]?: T[P];
@@ -43,7 +44,7 @@ function ProfilePage() {
       const updated: Optional<userData> = {};
       // if it is not the old name we pass the name to our updated obj and update in fb.
       if (auth.currentUser.displayName !== name) {
-        updated.name = name;
+        updated.firstName = name;
         await updateProfile(auth.currentUser as User, {
           displayName: name,
         });
@@ -63,6 +64,10 @@ function ProfilePage() {
         message = err.message;
       }
       toast.error(message);
+      setFormData(()=>({
+        name: user?.displayName ?? "",
+        email: user?.email ?? "",
+      }));
     }
   }
   function handleChangeDetails() {
@@ -80,7 +85,7 @@ function ProfilePage() {
       <div className="mb-[5rem] flex items-center justify-between">
         <h1 className="text-2xl md:text-4xl">
           Welcome{" "}
-          <span className="opacity-70 font-medium ">{"Nathan Somto"}</span>{" "}
+          <span className="opacity-70 font-medium ">{formData.name}</span>{" "}
           <span>👋</span>
         </h1>
         <button
@@ -105,13 +110,15 @@ function ProfilePage() {
         </div>
         <div className="bg-[#fff] text-gray-800 rounded-2xl space-y-6 shadow-[0px_0px_5px_rgba(0,0,0,0.2)] p-4 h-[225px]">
           <div className="flex flex-col mt-2 space-y-2">
-            <label htmlFor="firstName" className="pl-4 text-sm opacity-80">
+            <label htmlFor="name" className="pl-4 text-sm opacity-80">
               Name
             </label>
             <input
               type="text"
               disabled={!changeDetails}
-              value={"Nathan Somto"}
+              value={formData.name}
+              name="name"
+              onChange={handleChange}
               className={`py-2 px-4 text-lg transition-all ease-in duration-300 ${
                 changeDetails
                   ? "bg-[#e2e0e0] outline-none border-[rgba(44,44,44,0.8)] active:border-2 focus:border-2  rounded-md"
@@ -124,9 +131,11 @@ function ProfilePage() {
               Email
             </label>
             <input
-              type="text"
+              type="email"
               disabled={!changeDetails}
-              value={"NathanSomto@gmail.com"}
+              value={formData.email}
+              name="email"
+              onChange={handleChange}
               className={`py-2 px-4  transition-all ease-in duration-300 text-lg ${
                 changeDetails
                   ? "bg-[#e2e0e0] outline-none border-[rgba(44,44,44,0.8)] active:border-2 focus:border-2  rounded-md"
