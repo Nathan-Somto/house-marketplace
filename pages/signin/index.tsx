@@ -1,9 +1,16 @@
 import GoogleAuth from "@/components/GoogleAuth";
+import { auth } from "@/firebase/firebase.config";
+import useAuthStore from "@/store/useAuthStore";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { ChangeEvent, FormEvent, useState } from "react";
+import { toast } from "react-toastify";
 
 function signIn() {
+  const router = useRouter();
+  const login = useAuthStore((state) => state.login);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -16,12 +23,18 @@ function signIn() {
       [name]: value,
     }));
   }
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const { email, password } = formData;
     try {
-      console.log(formData);
+      // sign in the user in firebase.
+      const cred = await signInWithEmailAndPassword(auth, email, password);
+      // login the user in our zustand state.
+      login(cred.user);
+      // replace the existing route with the explore page.
+      router.replace("/explore");
     } catch (err) {
-      /*  toast.error("invalid email or password"); */
+      toast.error("invalid email or password");
     }
   }
   return (

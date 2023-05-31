@@ -6,8 +6,16 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import capitalize from "@/utils/capitalize";
 import Link from "next/link";
+import { User, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { auth, db } from "@/firebase/firebase.config";
+import useAuthStore from "@/store/useAuthStore";
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+import { toast } from "react-toastify";
+import { useRouter } from "next/router";
 
 function signup() {
+  const router = useRouter();
+  const login = useAuthStore((state) => state.login);
   const {
     register,
     handleSubmit,
@@ -18,12 +26,31 @@ function signup() {
   });
   const [togglePassword, setTogglePassword] = useState(false);
   const [togglePassword2, setTogglePassword2] = useState(false);
-  function onSubmit(data: signupType) {
+  async function onSubmit(data: signupType) {
     let { firstName, password, email } = data;
     firstName = capitalize(firstName);
     try {
-      console.log("the given data >>", firstName, password, email);
-    } catch (err) {}
+      // create the user in firebase.
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
+      // update the users profile in firebase.
+      await updateProfile(auth.currentUser as User, {
+        displayName: firstName,
+      });
+      // add the newly created user to the users firestore collection.
+      await setDoc(doc(db, "users", cred.user.uid), {
+        firstName,
+        email,
+        timestamp: serverTimestamp(),
+      });
+      // login in our user in our zustand state.
+      login(auth.currentUser as User);
+      // replace the existing route to that of the explore page.
+      router.replace("/explore");
+    } catch (err) {
+      let message = "there was an error while submitting the form.";
+      if (err instanceof Error) message = err.message;
+      toast.error(message);
+    }
   }
   return (
     <main className="bg-primary-grey grid grid-cols-1 min-h-screen lg:grid-cols-2  lg:gap-[10%]">

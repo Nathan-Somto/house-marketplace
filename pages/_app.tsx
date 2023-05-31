@@ -1,4 +1,5 @@
 import "@/styles/globals.css";
+import 'react-toastify/dist/ReactToastify.css';
 import { NextPage } from "next";
 import { AppProps } from "next/app";
 import { Montserrat } from "next/font/google";
