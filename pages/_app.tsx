@@ -4,6 +4,7 @@ import { NextPage } from "next";
 import { AppProps } from "next/app";
 import { Montserrat } from "next/font/google";
 import { ReactElement, ReactNode } from "react";
+import { ToastContainer } from "react-toastify";
 const montserrat = Montserrat({
   weight: ["400", "700", "600", "500"],
   style: ["normal"],
@@ -22,6 +23,11 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
   return (
     <div className={montserrat.className}>
       {getLayout(<Component {...pageProps} />)}
+      <ToastContainer
+      className={'rounded-4xl'}
+      theme='dark'
+      position="top-right"
+      />
     </div>
   );
 }

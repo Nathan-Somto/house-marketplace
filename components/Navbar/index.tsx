@@ -8,7 +8,7 @@ function NavBar() {
     return false;
   }
   return (
-    <nav className="fixed max-md:bottom-0 py-5 px-3 w-full border-t border-[#cccfcc] md:border-r md:border-t-0 md:left-0 md:w-[30%] md:h-screen md:max-w-[250px] md:py-8 bg-primary-white">
+    <nav className="fixed max-md:bottom-0 h-[110px] z-[900] py-5 px-3 w-full border-t border-[#cccfcc] md:border-r md:border-t-0 md:left-0  md:h-screen md:w-[250px] md:py-8 bg-primary-white">
       <h2 className="hidden md:block text-lg mb-8 px-3 py-2">
         House Marketplace
       </h2>

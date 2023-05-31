@@ -1,13 +1,13 @@
 import { create } from "zustand";
 import { User } from "firebase/auth";
 
-type Actions = {
+type Store = {
   user: User | null;
   login: (payload: User) => void;
   logout: () => void;
 };
 
-const useAuthStore = create<Actions>((set) => ({
+const useAuthStore = create<Store>((set) => ({
   user: null,
   login: (payload) => set((state) => ({ user: payload })),
   logout: () => set((state) => ({ user: null })),
