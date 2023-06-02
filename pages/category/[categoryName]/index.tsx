@@ -1,4 +1,5 @@
 import AuthLayout from "@/components/AuthLayout";
+import ListingItem from "@/components/ListingItem";
 import { db } from "@/firebase/firebase.config";
 import { IListing } from "@/types";
 import {
@@ -53,17 +54,17 @@ export const getServerSideProps: GetServerSideProps<
   docSnap.forEach((doc: QueryDocumentSnapshot<DocumentData>) =>
     listings.push({
       id: doc.id,
-      data:{ 
+      data: {
         ...(doc.data() as IListing),
-    timestamp: (doc.data().timestamp as Timestamp).toString()
-    }
+        timestamp: (doc.data().timestamp as Timestamp).toString(),
+      },
     })
   );
   return { props: { listings } };
 };
 function CategoryPage({ listings }: CategoryPageProps) {
   const [lastListing, setLastListing] = useState<CategoryData | null>(null);
-  console.log(listings)
+  console.log(listings);
   const router = useRouter();
   useEffect(() => {
     if (listings.length !== 0) {
@@ -79,11 +80,27 @@ function CategoryPage({ listings }: CategoryPageProps) {
         </h1>
       </div>
       {/* Listing item come here */}
-      {listings.length ? (
-        listings.map((listing) => <h3 key={listing.id}>{listing.data.name}</h3>)
-      ) : (
-        <p>There are currently no listings for {router.query.categoryname}</p>
-      )}
+      <div className="space-y-4">
+        {listings.length ? (
+          listings.map(({ data, id }) => (
+            <ListingItem
+              bathrooms={data.bathrooms}
+              bedrooms={data.bedrooms}
+              id={id}
+              imageUrls={data.imageUrls}
+              location={data.location}
+              name={data.name}
+              offer={data.offer}
+              regularPrice={data.regularPrice}
+              type={data.type}
+              discountedPrice={data?.discountedPrice}
+              key={id}
+            />
+          ))
+        ) : (
+          <p>There are currently no listings for {router.query.categoryname}</p>
+        )}
+      </div>
       {/* Load more button comes here */}
       {/* 
             <LoadMore 
