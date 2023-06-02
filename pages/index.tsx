@@ -9,7 +9,6 @@ export default function Home(){
             <meta name="description" content="A web application to find houses near you." />
             <meta name="keywords" content="Houses, Market, Offers, Discount, Rent, Sell, Affordable Prices" />
         </Head>
-        <Navbar/>
         <main>
             <h1 className="text-xl underline text-violet-600 ">House Marketplace</h1>
             <p className="">Weclome to house marketplace</p>

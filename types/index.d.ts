@@ -1,3 +1,4 @@
+import { Timestamp } from 'firebase/firestore';
 type category = "rent" | "sale";
 type geoLocation = {
     lat:string,
@@ -16,6 +17,6 @@ interface IListing{
     location:string,
     geoLocation:geoLocation,
     imageUrls:string[],
-    timestamp:string
+    timestamp:Timestamp|string
 }
 export {IListing, category,geoLocation}
