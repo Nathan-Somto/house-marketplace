@@ -46,13 +46,13 @@ function CreateListingPage() {
     images: [],
   });
   const [loading, setLoading] = useState(false);
-  /* useEffect(() => {
+  useEffect(() => {
     if (user !== null) {
       setFormData((prevState) => ({ ...prevState, userRef: user.uid }));
     } else {
       router.push("/signin");
     }
-  }, [user]); */
+  }, [user]);
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (formData.discountedPrice >= formData.regularPrice) {
