@@ -64,7 +64,6 @@ export const getServerSideProps: GetServerSideProps<
 };
 function CategoryPage({ listings }: CategoryPageProps) {
   const [lastListing, setLastListing] = useState<CategoryData | null>(null);
-  console.log(listings);
   const router = useRouter();
   useEffect(() => {
     if (listings.length !== 0) {
@@ -87,7 +86,7 @@ function CategoryPage({ listings }: CategoryPageProps) {
               bathrooms={data.bathrooms}
               bedrooms={data.bedrooms}
               id={id}
-              imageUrls={data.imageUrls}
+              imgUrls={data.imgUrls}
               location={data.location}
               name={data.name}
               offer={data.offer}

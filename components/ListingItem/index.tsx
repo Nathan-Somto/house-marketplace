@@ -13,7 +13,7 @@ function ListingItem({
   bedrooms,
   discountedPrice,
   id,
-  imageUrls,
+  imgUrls,
   location,
   name,
   offer,
@@ -27,22 +27,31 @@ function ListingItem({
       href={`/category/${type}/${id}`}
       className="flex relative space-x-2 w-full items-center  h-[130px] text-black lg:h-[250px]"
     >
-       <figure className="relative w-[30%] lg:w-[20%] group overflow-hidden h-[130px] lg:h-[250px] mr-5 rounded-3xl p-0">
-      <Image
-       fill
-        alt={name}
-        src={imageUrls[0]}
-        className="object-cover   group-hover:scale-125 transition-all duration-200 ease-linear"
-      />
-       </figure>
+      <figure className="relative w-[30%] lg:w-[20%] group overflow-hidden h-[130px] lg:h-[250px] mr-5 rounded-3xl p-0">
+        <Image
+          fill
+          alt={name}
+          src={imgUrls[0]}
+          className="object-cover   group-hover:scale-125 transition-all duration-200 ease-linear"
+        />
+      </figure>
       <div className="w-[65%] lg:w-[79%]">
         <p className="text-[0.7rem] font-semibold opacity-80 mb-0">
           {location}
         </p>
         <h3 className="font-semibold m-0 text-xl text-black">{name}</h3>
-        <p className="mt-2 font-semibold text-lg text-primary-green mb-2">
-          ${offer ? discountedPrice : regularPrice}
-          {type === "rent" ? " / Month" : ""}
+        <p className="flex flex-col mt-2 font-semibold text-lg text-primary-green mb-2">
+          {offer ? (
+            <span className="text-[0.7rem] line-through text-black opacity-80 ">
+              ${regularPrice + (type === "rent" ? " / Month" : "")}
+            </span>
+          ) : (
+            ""
+          )}
+          <span>
+            ${offer ? discountedPrice : regularPrice}
+            {type === "rent" ? " / Month" : ""}
+          </span>
         </p>
         <div className="flex justify-between flex-wrap  max-w-[300px]">
           <p className=" text-[0.72rem] flex items-center gap-3">

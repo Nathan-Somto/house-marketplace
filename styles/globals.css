@@ -25,4 +25,25 @@
   .input-error{
     @apply text-red-500  font-medium;
   }
+  .listing-label{
+    @apply font-semibold block;
+  }
+  .listing-button{
+    @apply px-12 py-[0.9rem] bg-primary-white rounded-2xl flex items-center justify-center shadow-[0_0_5px_rgba(0,0,0,0.2)] ;
+  }
+  .listing-button-active{
+    @apply bg-primary-green text-primary-white;
+  }
+  .listing-input{
+    @apply border outline-none;
+  }
+}
+.listing-input-file::-webkit-file-upload-button {
+  background-color: #00cc66;
+  border: none;
+  color: #ffffff;
+  font-weight: 600;
+  padding: 0.5rem 0.75rem;
+  border-radius: 1rem;
+  margin-right: 1rem;
 }
