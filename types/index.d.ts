@@ -4,6 +4,11 @@ type geoLocation = {
     lat:string,
     lng:string
 }
+interface IUser{
+    firstName:string,
+    email:string,
+    timestamp:Timestamp|string | FieldValue
+}
 interface IListing{
     name:string,
     type:category,
@@ -18,6 +23,7 @@ interface IListing{
     location:string,
     geoLocation:geoLocation,
     imgUrls:string[],
-    timestamp:Timestamp|string | FieldValue
+    timestamp:Timestamp|string | FieldValue,
+    city?:string
 }
-export {IListing, category,geoLocation}
+export {IListing, category,geoLocation, IUser}

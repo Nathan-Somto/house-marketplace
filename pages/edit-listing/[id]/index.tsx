@@ -15,19 +15,45 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 import { toast } from "react-toastify";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { getDoc, doc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { db } from "@/firebase/firebase.config";
 import useAuthStore from "@/store/useAuthStore";
 import { useRouter } from "next/router";
 import Spinner from "@/components/Spinner";
 import AuthLayout from "@/components/AuthLayout";
+import { GetServerSideProps } from "next";
+import { ParsedUrlQuery } from "querystring";
+type notFound = {
+  notFound: boolean;
+};
+const getServerSideProps: GetServerSideProps<
+  { listing: IListing } | notFound
+> = async (context) => {
+  try {
+    const { id } = context.params as ParsedUrlQuery;
+    const docRef = doc(db, "listings", id as string);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      return {
+        props: {
+          listing: docSnap.data() as IListing,
+        },
+      };
+    }
+    throw new Error("listing was not found");
+  } catch (err) {
+    return {
+      notFound: true,
+    };
+  }
+};
 type files = { files: FileList };
-type formData = Omit<IListing, "geoLocation" | "imgUrls" | "timestamp"> & {
+type formData = IListing & {
   city: string;
   images: File[];
   discountedPrice: number;
 };
-function CreateListingPage() {
+function EditListingPage({ listing }: { listing: IListing }) {
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
   const [formData, setFormData] = useState<formData>({
@@ -44,12 +70,28 @@ function CreateListingPage() {
     city: "",
     userRef: "",
     images: [],
+    geoLocation: {
+      lat: "0",
+      lng: "0",
+    },
+    imgUrls: [],
+    timestamp: "",
   });
   const [loading, setLoading] = useState(false);
+  // check if it is the user listing 
+  // not the logged in users listings then redirect
+  // prefill the form with data in the firebase.
   useEffect(() => {
-    if (user !== null) {
-      setFormData((prevState) => ({ ...prevState, userRef: user.uid }));
+    if (listing.userRef !== user?.uid) {
+      toast.error(`you cannot edit ${listing.name} as it not yours`);
+      setTimeout(() => router.push("/explore"), 3000);
     } else {
+      setFormData((prevState) => ({ ...prevState, ...listing }));
+    }
+  }, [listing,user]);
+  // kick user out if not logged in.
+  useEffect(() => {
+    if (user === null) {
       router.push("/signin");
     }
   }, [user]);
@@ -73,8 +115,8 @@ function CreateListingPage() {
         );
         const data = await res.json();
         if (data !== null && data.length > 0) {
-          geoLocation.lat = data[0].lat.toString() ?? "0";
-          geoLocation.lng = data[0].lng.toString() ?? "0";
+          geoLocation.lat = data[0].lat.toString() ?? formData.geoLocation.lat;
+          geoLocation.lng = data[0].lng.toString() ?? formData.geoLocation.lng;
         }
         console.log(formData);
       } else {
@@ -85,17 +127,18 @@ function CreateListingPage() {
         formData.images.map((image) => storeImage(image))
       ).catch(() => toast.error("failed to upload images."));
 
-      const listingData: IListing & { images: undefined } = {
-        geoLocation,
-        imgUrls: imgUrls as string[],
-        timestamp: serverTimestamp(),
+      const updatedListingData: IListing & { images: undefined } = {
         ...formData,
-        images:undefined
+        imgUrls: imgUrls as string[],
+        geoLocation,
+        images: undefined,
       };
-      delete listingData.images;
-      const docRef = collection(db, "listings");
-      const doc = await addDoc(docRef, listingData);
-      toast.success("Successfully created Listing.");
+      delete updatedListingData.images;
+
+      const docRef = doc(db, "listings", router.query.id as string);
+      const updatedDoc = await updateDoc(docRef, updatedListingData);
+      toast.success("Successfully updated Listing.");
+      router.push(`/category/${formData.type}/${router.query.id}`);
     } catch (err) {
       let message = "there was an error while creating the listing.";
       if (err instanceof Error) message = err.message;
@@ -174,7 +217,7 @@ function CreateListingPage() {
     <>
       <section className="bg-primary-grey py-8  relative text-primary-black px-[5%]">
         <header className="mb-6 ">
-          <h1 className="lg:text-4xl">Create a Listing</h1>
+          <h1 className="lg:text-4xl">Edit Listing</h1>
         </header>
         <form className="space-y-5" onSubmit={handleSubmit}>
           <div>
@@ -474,7 +517,7 @@ function CreateListingPage() {
             type={"submit"}
             className="primary-btn w-[80%] mx-auto hover:opacity-50 "
           >
-            Create Listing
+            Edit Listing
           </button>
         </form>
       </section>
@@ -482,7 +525,7 @@ function CreateListingPage() {
     </>
   );
 }
-CreateListingPage.getLayout = function getLayout(page: JSX.Element) {
+EditListingPage.getLayout = function getLayout(page: JSX.Element) {
   return <AuthLayout>{page}</AuthLayout>;
 };
-export default CreateListingPage;
+export default EditListingPage;

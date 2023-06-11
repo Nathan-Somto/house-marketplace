@@ -9,31 +9,22 @@ function NavBar() {
   }
   return (
     <nav className="fixed max-md:bottom-0 h-[110px] z-[900] py-5 px-3 w-full border-t border-[#cccfcc] md:border-r md:border-t-0 md:left-0  md:h-screen md:w-[250px] md:py-8 bg-primary-white">
-      <h2 className="hidden md:block text-lg mb-8 px-3 py-2">
-        House Marketplace
-      </h2>
-      <ul className="flex space-x-8 items-center justify-center md:space-x-0 md:flex-col md:justify-start md:items-start md:space-y-4 w-full">
-        <li className="md:hover:bg-gray-300 md:w-full md:px-3 md:rounded-md md:flex md:py-2">
-          <Link
-            href="/home"
-            className={`flex flex-col space-y-2 items-center justify-center md:space-x-4 md:flex-row md:space-y-0 ${
-              pathMatchRoute("/home") ? "text-gray-900" : "text-gray-500"
-            }`}
-          >
-            <svg
-              className="max-md:hover:scale-110 transition-all ease-out duration-300"
+      <h2 className="hidden md:block text-lg mb-4 px-3 py-2">
+        <span>
+        <svg
+             className="inline mr-2"
               xmlns="http://www.w3.org/2000/svg"
               height="35px"
               viewBox="0 0 24 24"
               width="35px"
-              fill={`${pathMatchRoute("/home") ? "#212121," : "#9E9E9E"}`}
+              fill={`#212121`}
             >
-              <path d="M0 0h24v24H0z" fill="none" />
-              <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
-            </svg>
-            <span>Home</span>
-          </Link>
-        </li>
+                <path d="M0 0h24v24H0z" fill="none"/>
+                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                </svg>
+          </span><span>Marketplace</span>
+      </h2>
+      <ul className="flex space-x-8 items-center justify-center md:space-x-0 md:flex-col md:justify-start md:items-start md:space-y-4 w-full">
         <li className="md:hover:bg-gray-300 md:w-full md:px-3 md:rounded-md md:flex md:py-2">
           <Link
             href="/explore"

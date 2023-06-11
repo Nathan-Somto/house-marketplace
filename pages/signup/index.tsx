@@ -13,8 +13,10 @@ import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 import Spinner from "@/components/Spinner";
+import {motion}  from 'framer-motion';
+import Head from 'next/head';
 
-function signup() {
+function signupPage() {
   const router = useRouter();
   const login = useAuthStore((state) => state.login);
   const {
@@ -62,9 +64,19 @@ function signup() {
   }
   return (
     <>
-   
+    <Head>
+      <title>Join - The fam Today</title>
+    </Head>
     <main className="bg-primary-grey grid grid-cols-1 min-h-screen lg:grid-cols-2  lg:gap-[10%]">
-      <aside className="bg-primary-green rounded-tr-[10%] rounded-br-[10%] lg:flex items-center hidden  justify-center relative min-h-screen">
+      <motion.aside 
+        initial={{x:'-100%'}}
+        animate={{x:'0%'}}
+        transition={{duration:1.2, delay:0.3,}}className="bg-primary-green rounded-tr-[10%] rounded-br-[10%] lg:flex items-center hidden  justify-center relative min-h-screen">
+      <motion.div
+          initial={{scale:0}}
+          animate={{scale:1}}
+          transition={{duration:1.2, ease:"easeIn", delay:1}}
+          >
         <Image
           src={"/signup-home.png"}
           alt={"sign up home"}
@@ -72,13 +84,15 @@ function signup() {
           height={400}
           priority
         />
-      </aside>
-      <form
+        </motion.div>
+      </motion.aside>
+      <motion.form
+         initial={{opacity:0}} animate={{opacity:1}} transition={{duration:1, delay:2.2}}
         onSubmit={handleSubmit(onSubmit)}
         className="py-8 flex justify-center w-full px-8 md:w-[80%] md:px-10 mx-auto lg:w-full flex-col space-y-8 lg:px-6 "
       >
         <h1>
-          Join the Fam <span className="text-primary-green">Today</span>
+          Join the Fam <motion.span initial={{y:80,opacity:0}} animate={{y:0,opacity:1}} exit={{y:80, opacity:0}} transition={{duration:0.8, delay:3}} className="text-primary-green">Today</motion.span>
         </h1>
         <div className="w-full">
           <label
@@ -250,11 +264,11 @@ function signup() {
             Sign In
           </Link>
         </p>
-      </form>
+      </motion.form>
     </main>
     {loading && <Spinner/>}
     </>
   );
 }
 
-export default signup;
+export default signupPage;

@@ -1,7 +1,8 @@
 import AuthLayout from "@/components/AuthLayout";
 import ListingItem from "@/components/ListingItem";
+import LoadMore from "@/components/LoadMore";
 import { db } from "@/firebase/firebase.config";
-import { IListing } from "@/types";
+import { IListing, category } from "@/types";
 import {
   DocumentData,
   QueryDocumentSnapshot,
@@ -56,7 +57,7 @@ export const getServerSideProps: GetServerSideProps<
       id: doc.id,
       data: {
         ...(doc.data() as IListing),
-        timestamp: (doc.data().timestamp as Timestamp).toString(),
+        
       },
     })
   );
@@ -64,12 +65,13 @@ export const getServerSideProps: GetServerSideProps<
 };
 function CategoryPage({ listings }: CategoryPageProps) {
   const [lastListing, setLastListing] = useState<CategoryData | null>(null);
+  const [fetchedListings, setFetchedListings] = useState(listings);
   const router = useRouter();
   useEffect(() => {
-    if (listings.length !== 0) {
-      setLastListing(listings[listings.length - 1]);
+    if (fetchedListings.length !== 0) {
+      setLastListing(fetchedListings[fetchedListings.length - 1]);
     }
-  }, [listings]);
+  }, [fetchedListings]);
 
   return (
     <section className="min-h-screen px-[5%] py-6 bg-primary-grey space-y-6 text-primary-black  ">
@@ -80,8 +82,8 @@ function CategoryPage({ listings }: CategoryPageProps) {
       </div>
       {/* Listing item come here */}
       <div className="space-y-4">
-        {listings.length ? (
-          listings.map(({ data, id }) => (
+        {fetchedListings.length ? (
+          fetchedListings.map(({ data, id }) => (
             <ListingItem
               bathrooms={data.bathrooms}
               bedrooms={data.bedrooms}
@@ -101,14 +103,20 @@ function CategoryPage({ listings }: CategoryPageProps) {
         )}
       </div>
       {/* Load more button comes here */}
-      {/* 
-            <LoadMore 
-            lastItem={} the last item to begin client data fetching gotten from the parent component.
-            setLast={} sets the last item for the parent component
-            setNewListings={} sets the state of client fetched listings for the parent componet.
-            field={} offers | rent | sale
-            />
-         */}
+
+      {lastListing && (
+        <LoadMore
+          lastItem={
+            lastListing
+          } /* the last item to begin client data fetching gotten from the parent component. */
+          setNewListings={
+            setFetchedListings
+          } /* sets the state of client fetched listings for the parent componet. */
+          field={
+            router.query.categoryname as category
+          } /* offers | rent | sale */
+        />
+      )}
     </section>
   );
 }

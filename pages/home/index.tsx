@@ -1,9 +1,43 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import {useRouter} from 'next/router';
-function HomePage() {
+import {motion} from 'framer-motion';
+function HomePage(){
     const router = useRouter();
   return (
-   <main className='h-screen relative'>
+    <>
+    <header className='fixed top-0 h-24 w-full z-[2]'>
+        <nav className='flex w-full justify-between px-6  items-center text-primary-white py-6'>
+            <p>
+                <span>
+            <svg
+              className="inline"
+              xmlns="http://www.w3.org/2000/svg"
+              height="20px"
+              viewBox="0 0 24 24"
+              width="20px"
+              fill={`#fff`}
+            >
+                <path d="M0 0h24v24H0z" fill="none"/>
+                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                </svg>
+            </span> <span>Marketplace</span></p>
+            <ul className='flex space-x-8 '>
+                <li>
+                    <Link href={'/signin'} className="py-[0.45rem] px-8 bg-primary-white text-primary-black font-medium rounded-3xl">Login</Link>
+                </li>
+                <li>
+                    <Link href={'/signup'} className="font-medium">Register</Link>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    
+   <motion.main className='h-screen relative '
+   initial={{opacity:0}}
+   animate={{opacity:1}}
+   transition={{ease:'easeIn', duration:1}}
+   >
     <figure className="h-screen w-full">
         <Image
         src={'/homePic.jpg'}
@@ -23,15 +57,16 @@ function HomePage() {
             here we make finding your dream home
             easy and painless.
         </p>
-        <button onClick={()=> router.push('/signup')} className='bg-primary-green text-gray-50 sm:text-lg border-primary-green border-[0.15rem] transition-all ease-in duration-300  font-semibold px-8 rounded-3xl py-3'>
+        <button onClick={()=> router.push('/signup')} className='bg-primary-green  text-gray-50 sm:text-lg  hover:opacity-75 transition-all ease-in duration-300  font-semibold px-8 rounded-[2rem] py-3'>
             Get Started Today
         </button>
     </section>
      <div
         className="h-full absolute bottom-0 w-full bg-gradient-to-b z-[1] backdrop-blur-lg opacity-50 from-primary-green via-green-800  "
     ></div>
-   </main>
+   </motion.main>
+   </>
   )
 }
 
-export default HomePage
+export default HomePage;

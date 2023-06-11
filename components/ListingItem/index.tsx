@@ -1,13 +1,20 @@
 import { IListing } from "@/types";
 import Link from "next/link";
 import Image from "next/image";
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 type props = Omit<
   IListing,
   "furnished" | "timestamp" | "parking" | "userRef" | "geoLocation"
 > & {
-  onDelete?: (id: string, name: string) => void;
+  showDeleteModal?: Dispatch<SetStateAction<boolean>>;
   id: string;
+  setSelectedListing?: Dispatch<
+    SetStateAction<{
+      id: string;
+      name: string;
+    }>
+  >;
+  onEdit?: (id: string) => void;
 };
 function ListingItem({
   bedrooms,
@@ -19,8 +26,10 @@ function ListingItem({
   offer,
   regularPrice,
   type,
-  onDelete,
+  showDeleteModal,
+  setSelectedListing,
   bathrooms,
+  onEdit,
 }: props) {
   return (
     <Link
@@ -111,9 +120,13 @@ function ListingItem({
           </p>
         </div>
       </div>
-      {onDelete && (
+      {/* Delete Icon */}
+      {showDeleteModal !== undefined && setSelectedListing !== undefined && (
         <button
-          onClick={() => onDelete(id, name)}
+          onClick={() => {
+            setSelectedListing({ id, name });
+            showDeleteModal(true);
+          }}
           className="absolute -top-[3%]  -right-[2%]"
         >
           <svg
@@ -125,6 +138,23 @@ function ListingItem({
           >
             <path d="M0 0h24v24H0z" fill="none" />
             <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
+          </svg>
+        </button>
+      )}
+      {/* Edit Icon */}
+      {onEdit !== undefined && (
+        <button onClick={() => onEdit(id)} className="absolute
+        top-[1%];
+        right-[20px]">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="24px"
+            viewBox="0 0 24 24"
+            width="24px"
+            fill="#000000"
+          >
+            <path d="M0 0h24v24H0z" fill="none" />
+            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
           </svg>
         </button>
       )}

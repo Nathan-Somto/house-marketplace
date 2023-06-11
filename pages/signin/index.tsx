@@ -3,13 +3,15 @@ import Spinner from "@/components/Spinner";
 import { auth } from "@/firebase/firebase.config";
 import useAuthStore from "@/store/useAuthStore";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import Head from 'next/head';
 import { useRouter } from "next/router";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { toast } from "react-toastify";
 
-function signIn() {
+function signinPage() {
   const router = useRouter();
   const login = useAuthStore((state) => state.login);
   const [formData, setFormData] = useState({
@@ -46,8 +48,20 @@ function signIn() {
   }
   return (
     <>
-      <main className="bg-primary-grey grid grid-cols-1 min-h-screen lg:grid-cols-2  lg:gap-[10%]">
-        <aside className="bg-primary-green rounded-tr-[10%] rounded-br-[10%] lg:flex items-center hidden  justify-center relative min-h-screen">
+    <Head>
+      <title>Continue - Your Journey</title>
+    </Head>
+      <motion.main key={router.asPath} exit={{opacity:0}} initial={{opacity:0}} animate={{opacity:1}} transition={{duration:0.8}} className="bg-primary-grey grid grid-cols-1 min-h-screen lg:grid-cols-2  lg:gap-[10%]">
+        <motion.aside 
+        initial={{x:'-100%'}}
+        animate={{x:'0%'}}
+        transition={{duration:1.2, delay:0.3,}}
+        className="bg-primary-green rounded-tr-[10%] rounded-br-[10%] lg:flex items-center hidden  justify-center relative min-h-screen">
+          <motion.div
+          initial={{scale:0}}
+          animate={{scale:1}}
+          transition={{duration:1.2, ease:"easeIn", delay:1}}
+          >
           <Image
             src={"/signin-home.png"}
             alt={"sign in home"}
@@ -55,12 +69,14 @@ function signIn() {
             height={400}
             priority
           />
-        </aside>
-        <form
+          </motion.div>
+        </motion.aside>
+        <motion.form
+         initial={{opacity:0}} animate={{opacity:1}} transition={{duration:1, delay:2.2}}
           onSubmit={handleSubmit}
           className="py-4 flex justify-center w-full px-8 md:w-[80%] md:px-10 mx-auto lg:w-full flex-col space-y-8 lg:px-6 "
         >
-          <h1>Welcome Back</h1>
+          <motion.h1 initial={{y:80,opacity:0}} animate={{y:0,opacity:1}} exit={{y:80, opacity:0}} transition={{duration:0.8, delay:3}}>Welcome Back</motion.h1>
           <div className="w-full">
             <label htmlFor="email" className="font-medium text-gray-600">
               Email
@@ -150,11 +166,11 @@ function signIn() {
               Sign Up
             </Link>
           </p>
-        </form>
-      </main>
+        </motion.form>
+      </motion.main>
       {loading && <Spinner />}
     </>
   );
 }
 
-export default signIn;
+export default signinPage;
