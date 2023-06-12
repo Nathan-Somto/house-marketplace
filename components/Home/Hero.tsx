@@ -75,7 +75,7 @@ function Hero() {
                   exit={{ scale: 0, opacity: 0 }}
                   animate={{ scale: [0.5, 1], opacity: 1 }}
                 >
-                  <Image src={img} fill className="object-cover" alt={img} />
+                  <Image src={img} fill className="object-cover" alt={img} priority />
                 </motion.div>
               )
           )}

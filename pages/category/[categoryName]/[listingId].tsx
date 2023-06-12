@@ -1,5 +1,6 @@
 import AuthLayout from "@/components/AuthLayout";
 import Slider from "@/components/Slider";
+import Map from '@/components/Map';
 import { db } from "@/firebase/firebase.config";
 import useAuthStore from "@/store/useAuthStore";
 import { IListing } from "@/types";
@@ -147,6 +148,7 @@ function ListingPage({ listing }: { listing: listingData }) {
             {listingData.location}
           </p>
           {/* Leaflet Map comes here. */}
+          <Map geoLocation={listingData.geoLocation} location={listingData.location}/>
         </div>
         {listingData.userRef !== user?.uid && (
           <button
