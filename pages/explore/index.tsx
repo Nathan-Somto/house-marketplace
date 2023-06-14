@@ -1,7 +1,7 @@
 import { GetStaticProps } from "next";
 import AuthLayout from "@/components/AuthLayout";
 import CategoryLink from "@/components/CategoryLink";
-import { collection, query, orderBy, getDocs, limit } from "firebase/firestore";
+import { collection, query, orderBy, getDocs, limit, Timestamp } from "firebase/firestore";
 import { IListing, category } from "@/types";
 import Link from "next/link";
 import { Navigation, Pagination, Scrollbar, A11y } from "swiper";
@@ -13,7 +13,7 @@ type ExploreData = {
   id: string;
 };
 // fetch slider data.
-const getStaticProps: GetStaticProps<{
+export const getStaticProps: GetStaticProps<{
   listings: ExploreData[];
 }> = async () => {
   const docRef = collection(db, "listings");
@@ -21,9 +21,21 @@ const getStaticProps: GetStaticProps<{
   const docSnap = await getDocs(q);
   const listings: ExploreData[] = [];
   docSnap.forEach((doc) => {
+    
+  let timestampString: string;
+
+  if (typeof doc.data().timestamp === 'string') {
+    timestampString = doc.data().timestamp;
+  } else if (doc.data().timestamp instanceof Timestamp) {
+    timestampString = doc.data().timestamp.toDate().toISOString();
+  } else {
+    // Handle FieldValue case if necessary
+    timestampString = ''; // Set a default value or handle accordingly
+  }
     listings.push({
       data: {
         ...(doc.data() as IListing),
+        timestamp:timestampString ,
       },
       id: doc.id,
     });

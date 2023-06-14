@@ -19,7 +19,7 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { Head } from "next/document";
+import  Head  from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { ChangeEvent, useEffect, useState } from "react";
@@ -40,8 +40,8 @@ function ProfilePage() {
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
   const router = useRouter();
-  const [userListings, setUserListings] = useState<userListingsData[] | null>(
-    null
+  const [userListings, setUserListings] = useState<userListingsData[]>(
+    []
   );
   const [formData, setFormData] = useState<userData>({
     name: user?.displayName ?? "",
@@ -65,7 +65,7 @@ function ProfilePage() {
           orderBy("timestamp", "desc")
         );
         const listingsSnap = await getDocs(q);
-
+        console.log(listingsSnap)
         const listings: userListingsData[] = [];
 
         listingsSnap.forEach((doc: QueryDocumentSnapshot<DocumentData>) =>
@@ -77,8 +77,9 @@ function ProfilePage() {
             },
           })
         );
-        setUserListings({ ...listings });
+        setUserListings([ ...listings ]);
       } catch (err) {
+        console.log(err);
       } finally {
         setLoading(false);
       }
@@ -127,10 +128,10 @@ function ProfilePage() {
         message = err.message;
       }
       toast.error(message);
-      setFormData(() => ({
+      setFormData({
         name: user?.displayName ?? "",
         email: user?.email ?? "",
-      }));
+      });
     }
   }
   function handleChangeDetails() {
@@ -164,7 +165,7 @@ function ProfilePage() {
   return (
   <>
   <Head>
-    <title>{formData.name} - Profile</title>
+    <title>{formData.name} -  Profile</title>
   </Head>
     <section className="px-8  md:px-[10%] pt-[5%] min-h-screen w-full text-gray-800 bg-primary-grey">
       <div className="mb-[5rem] flex items-center justify-between">
@@ -255,7 +256,7 @@ function ProfilePage() {
         <h2 className="md:text-3xl">My Listings</h2>
         {loading ? (
           <div className="h-12 w-12 border-t-transparent block border-solid border rounded-[50%] border-primary-green animate-spin"></div>
-        ) : userListings !== null && userListings.length > 0 ? (
+        ) : userListings.length > 0 ? (
           <>
             {userListings.map(({ data, id }) => (
               <ListingItem

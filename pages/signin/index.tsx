@@ -37,7 +37,7 @@ function signinPage() {
       // login the user in our zustand state.
       login(cred.user);
       // replace the existing route with the explore page.
-      router.replace("/explore");
+      router.replace("/welcome");
       
     } catch (err) {
       toast.error("invalid email or password");

@@ -9,22 +9,22 @@ function NavBar() {
   }
   return (
     <nav className="fixed max-md:bottom-0 h-[110px] z-[900] py-5 px-3 w-full border-t border-[#cccfcc] md:border-r md:border-t-0 md:left-0  md:h-screen md:w-[250px] md:py-8 bg-primary-white">
-      <h2 className="hidden md:block text-lg mb-4 px-3 py-2">
-        <span>
+         <h4 className="absolute top-[10px] md:block hidden left-[2px] font-semibold fill-[#fff] text-lg mb-4 px-3 py-2">
+      <span>
         <svg
              className="inline mr-2"
               xmlns="http://www.w3.org/2000/svg"
-              height="35px"
+              height="20px"
               viewBox="0 0 24 24"
-              width="35px"
+              width="20px"
               fill={`#212121`}
             >
                 <path d="M0 0h24v24H0z" fill="none"/>
                 <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
                 </svg>
-          </span><span>Marketplace</span>
-      </h2>
-      <ul className="flex space-x-8 items-center justify-center md:space-x-0 md:flex-col md:justify-start md:items-start md:space-y-4 w-full">
+          </span><span>marketplace</span>
+      </h4>
+      <ul className="flex space-x-8 items-center justify-center md:space-x-0 md:flex-col md:justify-start md:items-start md:space-y-4 md:mt-[50px] w-full">
         <li className="md:hover:bg-gray-300 md:w-full md:px-3 md:rounded-md md:flex md:py-2">
           <Link
             href="/explore"

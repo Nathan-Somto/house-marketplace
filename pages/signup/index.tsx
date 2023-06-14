@@ -39,9 +39,10 @@ function signupPage() {
       // create the user in firebase.
       const cred = await createUserWithEmailAndPassword(auth, email, password);
       // update the users profile in firebase.
-      await updateProfile(auth.currentUser as User, {
+     const updated = await updateProfile(auth.currentUser as User, {
         displayName: firstName,
       });
+      console.log(updated);
       // add the newly created user to the users firestore collection.
       await setDoc(doc(db, "users", cred.user.uid), {
         firstName,
@@ -52,7 +53,7 @@ function signupPage() {
       login(auth.currentUser as User);
       
       // replace the existing route to that of the explore page.
-      router.replace("/explore");
+      router.replace("/welcome");
     } catch (err) {
       let message = "there was an error while submitting the form.";
       if (err instanceof Error) message = err.message;

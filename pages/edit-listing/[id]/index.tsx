@@ -7,15 +7,17 @@ import {
   ChangeEventHandler,
   FormEvent,
   useEffect,
+  useRef,
 } from "react";
 import {
   getStorage,
   ref,
   uploadBytesResumable,
   getDownloadURL,
+  uploadString,
 } from "firebase/storage";
 import { toast } from "react-toastify";
-import { getDoc, doc, serverTimestamp, updateDoc } from "firebase/firestore";
+import { getDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "@/firebase/firebase.config";
 import useAuthStore from "@/store/useAuthStore";
 import { useRouter } from "next/router";
@@ -23,6 +25,7 @@ import Spinner from "@/components/Spinner";
 import AuthLayout from "@/components/AuthLayout";
 import { GetServerSideProps } from "next";
 import { ParsedUrlQuery } from "querystring";
+import PreviewImage from "@/components/PreviewImage";
 type notFound = {
   notFound: boolean;
 };
@@ -50,12 +53,14 @@ const getServerSideProps: GetServerSideProps<
 type files = { files: FileList };
 type formData = IListing & {
   city: string;
-  images: File[];
+  images: string[];
   discountedPrice: number;
 };
 function EditListingPage({ listing }: { listing: IListing }) {
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
+  const imageInput = useRef<HTMLInputElement | null>(null);
+  const oldCity = useRef<string>("");
   const [formData, setFormData] = useState<formData>({
     type: "rent",
     name: "",
@@ -77,8 +82,9 @@ function EditListingPage({ listing }: { listing: IListing }) {
     imgUrls: [],
     timestamp: "",
   });
-  const [loading, setLoading] = useState(false);
-  // check if it is the user listing 
+  const [loading, setLoading] = useState<boolean>(false);
+  const [deleting, setDeleting] = useState<number>(-1);
+  // check if it is the user listing
   // not the logged in users listings then redirect
   // prefill the form with data in the firebase.
   useEffect(() => {
@@ -88,13 +94,19 @@ function EditListingPage({ listing }: { listing: IListing }) {
     } else {
       setFormData((prevState) => ({ ...prevState, ...listing }));
     }
-  }, [listing,user]);
+  }, [listing, user]);
   // kick user out if not logged in.
   useEffect(() => {
     if (user === null) {
       router.push("/signin");
     }
   }, [user]);
+  // keep the name of the old city.
+  useEffect(() => {
+    if (listing.city) {
+      oldCity.current = listing.city;
+    }
+  }, []);
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (formData.discountedPrice >= formData.regularPrice) {
@@ -108,8 +120,11 @@ function EditListingPage({ listing }: { listing: IListing }) {
     setLoading(true);
     try {
       let geoLocation: geoLocation = { lat: "0", lng: "0" };
-
-      if (formData.city !== "") {
+      if (formData.city === "") {
+        throw new Error("the city cannot be empty.");
+      }
+      // no need to geocode if it is the old city.
+      if (formData.city !== oldCity.current) {
         const res = await fetch(
           `http://api.openweathermap.org/geo/1.0/direct?q=${formData.city}&limit=1&appid=${process.env.NEXT_PUBLIC_GEOCODE_KEY}`
         );
@@ -119,17 +134,23 @@ function EditListingPage({ listing }: { listing: IListing }) {
           geoLocation.lng = data[0].lng.toString() ?? formData.geoLocation.lng;
         }
         console.log(formData);
-      } else {
-        throw new Error("the city cannot be empty.");
       }
-
+      // loops only through the new images added.
+      // loops through all images in our array , stores them in firebase and gets the uploaded url to store in firestore.
       const imgUrls = await Promise.all(
-        formData.images.map((image) => storeImage(image))
-      ).catch(() => toast.error("failed to upload images."));
+        formData.images.map(async (image) => {
+          try {
+            const imgUrl = await storeImage(image);
+            return imgUrl;
+          } catch (err) {
+            toast.error("could not upload images.");
+          }
+        })
+      );
 
       const updatedListingData: IListing & { images: undefined } = {
         ...formData,
-        imgUrls: imgUrls as string[],
+        imgUrls: [...formData.imgUrls, ...(imgUrls as string[])],
         geoLocation,
         images: undefined,
       };
@@ -147,37 +168,19 @@ function EditListingPage({ listing }: { listing: IListing }) {
       setLoading(false);
     }
   }
-  async function storeImage(image: File) {
-    return new Promise((resolve, reject) => {
-      const storage = getStorage();
-      const fileName = `userId-${image.name}-${new Date().getTime()}`;
-      const storageRef = ref(storage, fileName);
-      const uploadTask = uploadBytesResumable(storageRef, image);
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          const progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log("Upload is " + progress + "% done");
-          switch (snapshot.state) {
-            case "paused":
-              console.log("Upload is paused");
-              break;
-            case "running":
-              console.log("Upload is running");
-              break;
-          }
-        },
-        (error) => {
-          reject(error);
-        },
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            resolve(downloadURL);
-          });
-        }
-      );
-    });
+  // function to store image in firebase
+  async function storeImage(image: string) {
+    const storage = getStorage();
+    // put the actual user id important
+    const fileName = `${formData.userRef}-${new Date().getTime()}`;
+    const storageRef = ref(storage, fileName);
+    try {
+      const snapShot = await uploadString(storageRef, image, "data_url");
+      const downloadUrl = await getDownloadURL(snapShot.ref);
+      return downloadUrl;
+    } catch (err) {
+      throw new Error();
+    }
   }
   function onMutate(
     e: MouseEvent<HTMLButtonElement> | ChangeEvent<HTMLInputElement>
@@ -196,22 +199,66 @@ function EditListingPage({ listing }: { listing: IListing }) {
     }
     // for the files field.
     if (type === "file") {
-      if ((e.target as files).files) {
-        // converts fileList from an Array like Object to an  array.
-        const fileList = Array.from((e.target as files).files);
+      const { files } = e.target as files;
+      if (files.length === 0) {
+        return;
+      }
+
+      // instantiate a new FileReader object
+      const fileReader = new FileReader();
+      fileReader.onload = function (fileReaderEvt) {
         // push our new file to the images array.
         setFormData((prevState) => ({
           ...prevState,
-          images: [...formData.images, ...fileList],
+          images: [...prevState.images, fileReaderEvt.target?.result as string],
         }));
-        return;
-      }
+      };
+      fileReader.readAsDataURL(files[0]);
+      return;
     }
     // for Booleans, Strings and Numbers.
     setFormData((prevState) => ({
       ...prevState,
       [id]: bool ?? value,
     }));
+  }
+  function handleImagePreview(e: MouseEvent<HTMLButtonElement>) {
+    if (imageInput.current !== null) {
+      imageInput.current.click();
+    }
+  }
+  // handleDelete function
+  /**
+   * 
+   * @param index 
+   * @returns 
+   * @todo implement deletion from firebase storage.
+   */
+  async function handleDelete(index: number) {
+    setDeleting(index);
+    if (deleting !== index) return;
+    try {
+      let imgUrlsCopy = formData.imgUrls;
+      imgUrlsCopy = imgUrlsCopy.splice(index, 1);
+      // delete image in firestore.
+      const updatedDoc = await updateDoc(doc(db, "listings", router.query.id as string), 
+      {
+        imgUrls: imgUrlsCopy,
+      });
+      // delete image in firebase storage
+
+      //update the ui.
+
+      setFormData((prevState) => ({
+        ...prevState,
+        imgUrls: [...imgUrlsCopy],
+      }));
+      toast.success("Successfully deleted image");
+    } catch (err) {
+      toast.error("Failed to delete image");
+    } finally {
+      setDeleting(-1);
+    }
   }
   return (
     <>
@@ -479,13 +526,67 @@ function EditListingPage({ listing }: { listing: IListing }) {
             )}
           </div>
           <div style={{ marginBottom: "5rem" }}>
-            <label htmlFor="images" className="font-semibold mb-3 block">
-              Images
-            </label>
+            {/* Image preview */}
+            {/* Selected Images from file system. */}
+            {formData.imgUrls.length > 0 || formData.images.length > 0 ? (
+              <div className="flex flex-col space-y-4">
+                <h3>Image Preview</h3>
+                <div className="flex gap-[15px] items-center justify-center flex-wrap mb-5">
+                  {formData.imgUrls.map((src, index) => (
+                    <PreviewImage
+                      deleting={deleting}
+                      onDelete={handleDelete}
+                      index={index}
+                      src={src}
+                      alt={`image-${index + 1}`}
+                      key={`${src}-${index + 1}`}
+                    />
+                  ))}
+                  {formData.images.map((src, index) => (
+                    <PreviewImage
+                      src={src}
+                      alt={`image-${index + 1}`}
+                      key={`${src}-${index + 1}`}
+                    />
+                  ))}
+                </div>
+              </div>
+            ) : null}
+            {/* Camera Icon */}
+            <button
+              type="button"
+              disabled={formData.images.length + formData.imgUrls.length === 6}
+              onClick={handleImagePreview}
+              className="disabled:opacity-50 hover:scale-110 ease-out duration-300 transition-all mb-2 disabled:cursor-not-allowed"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="#00cc66"
+                height="50px"
+                width="50px"
+                version="1.1"
+                id="Layer_1"
+                viewBox="0 0 512 512"
+              >
+                <g>
+                  <g>
+                    <g>
+                      <path d="M457.188,106.847h-91.651l-18.672-44.496c-3.015-7.183-10.045-11.858-17.835-11.858H182.971     c-7.789,0-14.821,4.674-17.835,11.858l-18.672,44.496h-17.532V81.991c0-10.682-8.66-19.341-19.341-19.341H54.812     c-10.682,0-19.341,8.66-19.341,19.341v28.391C14.765,118.217,0,138.242,0,161.659v245.035c0,30.223,24.589,54.812,54.812,54.812     h402.376c30.224,0,54.812-24.589,54.812-54.812V161.659C512,131.435,487.411,106.847,457.188,106.847z M195.83,89.177h120.341     l7.414,17.67H188.415L195.83,89.177z M74.154,101.332h16.093v5.514H74.154V101.332z M473.317,406.694L473.317,406.694     c0,8.893-7.236,16.129-16.129,16.129H54.812c-8.893,0-16.129-7.236-16.129-16.129V161.659c0-8.893,7.236-16.129,16.129-16.129     c6.742,0,399.507,0,402.376,0c8.893,0,16.129,7.236,16.129,16.129V406.694z" />
+                      <path d="M256,147.78c-75.21,0-136.395,61.187-136.395,136.395c0,75.21,61.187,136.396,136.395,136.396     s136.395-61.187,136.395-136.396S331.21,147.78,256,147.78z M256,381.889c-53.88,0-97.713-43.834-97.713-97.713     c0-53.88,43.834-97.713,97.713-97.713s97.713,43.834,97.713,97.713C353.713,338.055,309.88,381.889,256,381.889z" />
+                      <path d="M256,217.892c-36.55,0-66.284,29.735-66.284,66.284c0,36.55,29.735,66.284,66.284,66.284s66.284-29.735,66.284-66.284     C322.284,247.626,292.55,217.892,256,217.892z M256,311.778c-15.219,0-27.601-12.382-27.601-27.602     c0-15.219,12.382-27.601,27.601-27.601c15.219,0,27.601,12.381,27.601,27.601C283.601,299.396,271.219,311.778,256,311.778z" />
+                    </g>
+                  </g>
+                </g>
+              </svg>
+            </button>
             <p className={"text-sm opacity-70 mb-2"}>
               The first image will be the cover (max 6)
             </p>
+            <label htmlFor="images" className="font-semibold mb-3 block">
+              Upload Images
+            </label>
             <input
+              ref={imageInput}
               type="file"
               name="images"
               max={6}
@@ -494,23 +595,9 @@ function EditListingPage({ listing }: { listing: IListing }) {
               required
               onChange={onMutate}
               id="images"
-              className="listing-input-file py-[0.9rem] px-[0.7rem] listing-input listing-button w-full"
+              hidden={true}
+              className="listing-input-file hidden py-[0.9rem] px-[0.7rem] listing-input listing-button w-full"
             />
-            {formData.images.length > 0 && (
-              <div className="mt-5">
-                <h4 className="text-base font-bold mb-2">Selected Files:</h4>
-                <ul>
-                  {formData.images.map((file: File, index: number) => (
-                    <li
-                      key={index}
-                      className="text-base text-primary-black mb-1 before:content-['\2022'] before:inline before:text-[1.02rem] before:font-bold before:mr-4 ml-5 before:text-primary-green"
-                    >
-                      {file.name}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
           </div>
 
           <button

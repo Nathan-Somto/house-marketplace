@@ -21,8 +21,20 @@ function forgotPasswordPage() {
   }
   return (
     <main className="w-full bg-primary-grey min-h-screen relative">
-      <Link href="/" className="absolute top-[30px] left-[30px] fill-[#fff]">
-        <Image src="/svg/homeIcon.svg" alt="home icon" width={30} height={30} />
+      <Link href="/" className="absolute top-[30px] left-[30px] fill-[#fff] text-lg mb-4 px-3 py-2">
+      <span>
+        <svg
+             className="inline mr-2"
+              xmlns="http://www.w3.org/2000/svg"
+              height="20px"
+              viewBox="0 0 24 24"
+              width="20px"
+              fill={`#212121`}
+            >
+                <path d="M0 0h24v24H0z" fill="none"/>
+                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                </svg>
+          </span><span>Marketplace</span>
       </Link>
       <form
         onSubmit={handleSubmit}
