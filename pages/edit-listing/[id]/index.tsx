@@ -1,4 +1,4 @@
-import { category, geoLocation, IListing } from "@/types";
+import { category, geoData, geoLocation, IListing } from "@/types";
 import {
   ChangeEvent,
   useState,
@@ -133,12 +133,11 @@ function EditListingPage({ listing }: { listing: IListing }) {
         const res = await fetch(
           `http://api.openweathermap.org/geo/1.0/direct?q=${formData.city}&limit=1&appid=${process.env.NEXT_PUBLIC_GEOCODE_KEY}`
         );
-        const data = await res.json();
+        const data: geoData[] | [] | null = await res.json();
         if (data !== null && data.length > 0) {
           geoLocation.lat = data[0].lat.toString() ?? formData.geoLocation.lat;
           geoLocation.lng = data[0].lon.toString() ?? formData.geoLocation.lng;
         }
-        console.log(formData);
       }
       else{
         geoLocation = {...formData.geoLocation}

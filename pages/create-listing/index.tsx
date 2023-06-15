@@ -1,4 +1,4 @@
-import { category, geoLocation, IListing } from "@/types";
+import { category, geoData, geoLocation, IListing } from "@/types";
 import {
   ChangeEvent,
   useState,
@@ -71,7 +71,7 @@ function CreateListingPage(): JSX.Element {
       toast.error("Discounted price cannot be greater than regular price.");
       return;
     }
-    if (formData.images.length > 7) {
+    if (formData.images.length > 6) {
       toast.error("You can only upload a maximium of 6 images.");
       return;
     }
@@ -83,13 +83,12 @@ function CreateListingPage(): JSX.Element {
         const res = await fetch(
           `http://api.openweathermap.org/geo/1.0/direct?q=${formData.city}&limit=1&appid=${process.env.NEXT_PUBLIC_GEOCODE_KEY}`
         );
-        const data = await res.json();
-        console.log(data);
+        const data: geoData[] | [] | null = await res.json();
         if (data !== null && data.length > 0) {
           geoLocation.lat = data[0].lat.toString() ?? "0";
           geoLocation.lng = data[0].lon.toString() ?? "0";
         }
-        console.log(formData);
+        
       } else {
         throw new Error("the city cannot be empty.");
       }
