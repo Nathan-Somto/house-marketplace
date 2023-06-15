@@ -42,15 +42,18 @@ function signupPage() {
      const updated = await updateProfile(auth.currentUser as User, {
         displayName: firstName,
       });
-      console.log(updated);
+      console.log(auth);
       // add the newly created user to the users firestore collection.
-      await setDoc(doc(db, "users", cred.user.uid), {
+      if(auth.currentUser === null || auth.currentUser.uid === undefined){
+        throw new Error('Failed to create user');
+      }
+      await setDoc(doc(db, "users", auth.currentUser.uid), {
         firstName,
         email,
         timestamp: serverTimestamp(),
       });
       // login in our user in our zustand state.
-      login(auth.currentUser as User);
+      login(cred.user);
       
       // replace the existing route to that of the explore page.
       router.replace("/welcome");

@@ -3,6 +3,7 @@ import ListingItem from "@/components/ListingItem";
 import LoadMore from "@/components/LoadMore";
 import { db } from "@/firebase/firebase.config";
 import { IListing } from "@/types";
+import formatTimestamp from "@/utils/formatTimestamp";
 import {
   DocumentData,
   QueryDocumentSnapshot,
@@ -44,13 +45,16 @@ export const getServerSideProps: GetServerSideProps<{
   try {
     const docSnap = await getDocs(q);
 
-    docSnap.forEach((doc: QueryDocumentSnapshot<DocumentData>) =>
+    docSnap.forEach((doc: QueryDocumentSnapshot<DocumentData>) =>{
+      let timestampString: string = formatTimestamp(doc.data() as IListing);
       listings.push({
         id: doc.id,
         data: {
           ...(doc.data() as IListing),
+          timestamp: timestampString
         },
       })
+      }
     );
   } catch (err) {
     console.log(err);

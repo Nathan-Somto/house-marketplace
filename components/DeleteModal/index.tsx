@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Dispatch, SetStateAction } from "react";
 
 type props ={
@@ -13,7 +13,7 @@ function DeleteModal({onDelete, showDeleteModal, id,name}:props) {
         showDeleteModal(false);
     }
   return (
-    <AnimatePresence>
+   
     <motion.div initial={{opacity:0}} exit={{opacity:0}}  animate={{opacity:1}} transition={{duration:0.45, delayChildren:1, ease:'easeIn'}} className="fixed top-0 text-primary-black right-0 bottom-0 left-0 z-[9000] h-full w-full bg-[rgba(0,0,0,0.5)]  flex justify-center items-center">
         <motion.div initial={{y:'-100%', scale:0.5}} exit={{y:'-100%'}} animate={{y:'0%', scale:1}} transition={{duration:1.2}} className="bg-primary-white space-y-[30px] relative h-[250px] w-[80%] max-w-[400px] py-8 px-5 rounded-2xl " >
         <h3 className="text-red-600 font-bold text-xl">Confirm Deletion </h3>
@@ -26,7 +26,7 @@ function DeleteModal({onDelete, showDeleteModal, id,name}:props) {
         
         </motion.div>
     </motion.div>
-    </AnimatePresence>
+    
   )
 }
 

@@ -46,7 +46,7 @@ function LoadMore({lastItem, setNewListings, field}:props):JSX.Element{
     },
   })
 );
-    setNewListings(prevState=>({...prevState, ...listings}));
+    setNewListings(prevState=>([...prevState, ...listings]));
     } catch (err) {
         toast.error("Could not fetch more listings.");
     }

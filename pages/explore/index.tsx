@@ -8,6 +8,7 @@ import { Navigation, Pagination, Scrollbar, A11y } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
 import { db } from "@/firebase/firebase.config";
+import formatTimestamp from "@/utils/formatTimestamp";
 type ExploreData = {
   data: IListing;
   id: string;
@@ -22,16 +23,7 @@ export const getStaticProps: GetStaticProps<{
   const listings: ExploreData[] = [];
   docSnap.forEach((doc) => {
     
-  let timestampString: string;
-
-  if (typeof doc.data().timestamp === 'string') {
-    timestampString = doc.data().timestamp;
-  } else if (doc.data().timestamp instanceof Timestamp) {
-    timestampString = doc.data().timestamp.toDate().toISOString();
-  } else {
-    // Handle FieldValue case if necessary
-    timestampString = ''; // Set a default value or handle accordingly
-  }
+  let timestampString: string = formatTimestamp(doc.data() as IListing);
     listings.push({
       data: {
         ...(doc.data() as IListing),

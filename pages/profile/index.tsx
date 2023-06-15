@@ -23,6 +23,7 @@ import  Head  from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { ChangeEvent, useEffect, useState } from "react";
+import{AnimatePresence} from 'framer-motion';
 import { toast } from "react-toastify";
 type userData = {
   name: string;
@@ -90,8 +91,8 @@ function ProfilePage() {
   }, [user]);
   async function onLogout() {
     await signOut(auth);
-    logout();
     router.replace("/");
+    logout();
   }
   async function onSubmit() {
     const { name, email } = formData;
@@ -253,7 +254,7 @@ function ProfilePage() {
       </button>
       {/* All the user's listings will be displayed here */}
       <div className="mt-[5rem]">
-        <h2 className="md:text-3xl">My Listings</h2>
+        <h2 className="md:text-3xl mb-6">My Listings</h2>
         {loading ? (
           <div className="h-12 w-12 border-t-transparent block border-solid border rounded-[50%] border-primary-green animate-spin"></div>
         ) : userListings.length > 0 ? (
@@ -278,7 +279,7 @@ function ProfilePage() {
             ))}
           </>
         ) : (
-          <div className="h-[150px] mt-6  text-center ">
+          <div className="h-[150px]   text-center ">
             <div className=" text-[60px]  ">
               <span>🙁</span>
             </div>
@@ -294,14 +295,17 @@ function ProfilePage() {
           </div>
         )}
       </div>
+      <AnimatePresence>
       {showDeleteModal && (
         <DeleteModal
           id={selectedListing.id}
           name={selectedListing.name}
           onDelete={handleDeleteListing}
+          key={'deleteModal'}
           showDeleteModal={setShowDeleteModal}
         />
       )}
+      </AnimatePresence>
     </section>
     </>
   );

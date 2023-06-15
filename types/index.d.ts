@@ -1,5 +1,12 @@
 import { FieldValue, Timestamp } from 'firebase/firestore';
 type category = "rent" | "sale";
+type geoData = {
+      name:string,
+      lat:number,
+      lon:number,
+      country:string,
+      state:string,
+};
 type geoLocation = {
     lat:string,
     lng:string
@@ -7,7 +14,7 @@ type geoLocation = {
 interface IUser{
     firstName:string,
     email:string,
-    timestamp:Timestamp|string | FieldValue
+    timestamp:Timestamp| string | FieldValue
 }
 interface IListing{
     name:string,
@@ -26,4 +33,4 @@ interface IListing{
     timestamp:Timestamp|string | FieldValue,
     city?:string
 }
-export {IListing, category,geoLocation, IUser}
+export {IListing, category,geoLocation,geoData,IUser}

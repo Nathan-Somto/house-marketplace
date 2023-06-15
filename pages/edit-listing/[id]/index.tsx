@@ -17,7 +17,7 @@ import {
   uploadString,
 } from "firebase/storage";
 import { toast } from "react-toastify";
-import { getDoc, doc, updateDoc } from "firebase/firestore";
+import { getDoc, doc, updateDoc, AddPrefixToKeys } from "firebase/firestore";
 import { db } from "@/firebase/firebase.config";
 import useAuthStore from "@/store/useAuthStore";
 import { useRouter } from "next/router";
@@ -26,10 +26,11 @@ import AuthLayout from "@/components/AuthLayout";
 import { GetServerSideProps } from "next";
 import { ParsedUrlQuery } from "querystring";
 import PreviewImage from "@/components/PreviewImage";
+import formatTimestamp from "@/utils/formatTimestamp";
 type notFound = {
   notFound: boolean;
 };
-const getServerSideProps: GetServerSideProps<
+export const getServerSideProps: GetServerSideProps<
   { listing: IListing } | notFound
 > = async (context) => {
   try {
@@ -37,9 +38,13 @@ const getServerSideProps: GetServerSideProps<
     const docRef = doc(db, "listings", id as string);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
+      let timestampString: string = formatTimestamp(docSnap.data() as IListing);
       return {
         props: {
-          listing: docSnap.data() as IListing,
+          listing:  {
+            ...(docSnap.data() as IListing),
+            timestamp: timestampString
+          },
         },
       };
     }
@@ -88,7 +93,7 @@ function EditListingPage({ listing }: { listing: IListing }) {
   // not the logged in users listings then redirect
   // prefill the form with data in the firebase.
   useEffect(() => {
-    if (listing.userRef !== user?.uid) {
+    if (listing?.userRef !== user?.uid) {
       toast.error(`you cannot edit ${listing.name} as it not yours`);
       setTimeout(() => router.push("/explore"), 3000);
     } else {
@@ -131,9 +136,12 @@ function EditListingPage({ listing }: { listing: IListing }) {
         const data = await res.json();
         if (data !== null && data.length > 0) {
           geoLocation.lat = data[0].lat.toString() ?? formData.geoLocation.lat;
-          geoLocation.lng = data[0].lng.toString() ?? formData.geoLocation.lng;
+          geoLocation.lng = data[0].lon.toString() ?? formData.geoLocation.lng;
         }
         console.log(formData);
+      }
+      else{
+        geoLocation = {...formData.geoLocation}
       }
       // loops only through the new images added.
       // loops through all images in our array , stores them in firebase and gets the uploaded url to store in firestore.
@@ -157,7 +165,13 @@ function EditListingPage({ listing }: { listing: IListing }) {
       delete updatedListingData.images;
 
       const docRef = doc(db, "listings", router.query.id as string);
-      const updatedDoc = await updateDoc(docRef, updatedListingData);
+      const updatedDoc = await updateDoc(
+        docRef,
+        updatedListingData as unknown as { [x: string]: any } & AddPrefixToKeys<
+          string,
+          any
+        >
+      );
       toast.success("Successfully updated Listing.");
       router.push(`/category/${formData.type}/${router.query.id}`);
     } catch (err) {
@@ -229,22 +243,27 @@ function EditListingPage({ listing }: { listing: IListing }) {
   }
   // handleDelete function
   /**
-   * 
-   * @param index 
-   * @returns 
+   *
+   * @param index
+   * @returns
    * @todo implement deletion from firebase storage.
    */
+  let deletingInProgress = false;
   async function handleDelete(index: number) {
-    setDeleting(index);
-    if (deleting !== index) return;
+   
+    if(deletingInProgress) return;
     try {
-      let imgUrlsCopy = formData.imgUrls;
-      imgUrlsCopy = imgUrlsCopy.splice(index, 1);
+      deletingInProgress = true;
+      setDeleting(index);
+      let imgUrlsCopy = [...formData.imgUrls];
+      imgUrlsCopy.splice(index, 1);
       // delete image in firestore.
-      const updatedDoc = await updateDoc(doc(db, "listings", router.query.id as string), 
-      {
-        imgUrls: imgUrlsCopy,
-      });
+      const updatedDoc = await updateDoc(
+        doc(db, "listings", router.query.id as string),
+        {
+          imgUrls: imgUrlsCopy,
+        }
+      );
       // delete image in firebase storage
 
       //update the ui.
@@ -423,6 +442,7 @@ function EditListingPage({ listing }: { listing: IListing }) {
               id="location"
               cols={35}
               rows={5}
+              value={formData.location}
               className="resize-none input-box max-w-[320px] px-2"
               onChange={
                 onMutate as unknown as ChangeEventHandler<HTMLTextAreaElement>

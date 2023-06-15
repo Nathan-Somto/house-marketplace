@@ -23,8 +23,8 @@ export default function App({ Component, pageProps,router }: AppPropsWithLayout)
   const getLayout = Component.getLayout ?? ((page: JSX.Element) => page);
   return (
     <AnimatePresence mode='wait' >
-    <div className={montserrat.className}>
-      {getLayout(<Component {...pageProps} key={router.asPath} />)}
+    <div className={montserrat.className} >
+      {getLayout(<Component {...pageProps} key={router.route}  />)}
       <ToastContainer
       className={'rounded-4xl'}
       theme='dark'

@@ -51,7 +51,7 @@ function signinPage() {
     <Head>
       <title>Continue - Your Journey</title>
     </Head>
-      <motion.main key={router.asPath} exit={{opacity:0}} initial={{opacity:0}} animate={{opacity:1}} transition={{duration:0.8}} className="bg-primary-grey grid grid-cols-1 min-h-screen lg:grid-cols-2  lg:gap-[10%]">
+      <motion.main key={router.route} exit={{opacity:0}} initial={{opacity:0}} animate={{opacity:1}} transition={{duration:0.8}} className="bg-primary-grey grid grid-cols-1 min-h-screen lg:grid-cols-2  lg:gap-[10%]">
         <motion.aside 
         initial={{x:'-100%'}}
         animate={{x:'0%'}}

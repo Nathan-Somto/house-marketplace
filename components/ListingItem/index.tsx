@@ -123,7 +123,8 @@ function ListingItem({
       {/* Delete Icon */}
       {showDeleteModal !== undefined && setSelectedListing !== undefined && (
         <button
-          onClick={() => {
+          onClick={(e) => {
+            e.preventDefault();
             setSelectedListing({ id, name });
             showDeleteModal(true);
           }}
@@ -143,9 +144,15 @@ function ListingItem({
       )}
       {/* Edit Icon */}
       {onEdit !== undefined && (
-        <button onClick={() => onEdit(id)} className="absolute
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            onEdit(id);
+          }}
+          className="absolute
         top-[1%];
-        right-[20px]">
+        -right-[2%]"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             height="24px"

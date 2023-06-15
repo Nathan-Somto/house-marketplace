@@ -10,6 +10,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { ParsedUrlQuery } from "querystring";
 import { useState } from "react";
+import formatTimestamp from "@/utils/formatTimestamp";
 type listingData = {
   data: IListing;
   id: string;
@@ -26,16 +27,21 @@ export const getServerSideProps: GetServerSideProps<
       notFound: true,
     };
   }
-  const docRef = doc(db, "listing", listingId as string);
+  const docRef = doc(db, "listings", listingId as string);
   const docSnap = await getDoc(docRef);
   if (!docSnap.exists()) {
     return {
       notFound: true,
     };
   }
+  let timestampString: string = formatTimestamp(docSnap.data() as IListing);
   const listing = {
-    data: docSnap.data() as IListing,
+    data: {
+      ...(docSnap.data() as IListing),
+      timestamp: timestampString
+    },
     id: docSnap.id,
+    
   };
 
   return {
