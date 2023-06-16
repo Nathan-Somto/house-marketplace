@@ -161,7 +161,7 @@ function SigninPage() {
           </div>
           <GoogleAuth pathname="in" />
           <p className="text-gray-600">
-            Don't have an Account{" "}
+            {"Don't"} have an Account{" "}
             <Link href="/signup" className="text-primary-green font-semibold">
               Sign Up
             </Link>
