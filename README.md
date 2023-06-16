@@ -17,8 +17,7 @@ A Web Application to purchase houses all over the world.
     <a href="https://github.com/Nathan-Somto/house-marketplace/pulls">Request Feature</a>
   </div>
 
-## Status
-Application will be deployed as soon as all bugs have been fixed.
+
 
 ## Tech-Stack
 
@@ -111,9 +110,13 @@ I wanted to use this project to learn Next js.
 `NEXT_PUBLIC_GEOCODE_KEY`
 
 ## Acknowledgements
-[Brad Traversy](https://github.com/) - How to start the project and create firebase rules.
-[ChatGpt]() - Helped to fix my bugs.
-[NextJs Docs]() - Helped me to understand how to use the page router.
+- [Brad Traversy](https://github.com/bradtraversy) - How to start the project and create firebase rules.
+
+- [ChatGpt](https://chat.openai.com/) - Helped to fix my bugs.
+
+- [NextJs Docs](https://nextjs.org/docs) - Helped me to understand how to use the page router.
 
 ## Contributors
-[Nathan-Somto](https://github.com/Nathan-Somto.com);
+- [Nathan-Somto](https://github.com/Nathan-Somto.com)
+
+**Don't forget to leave a ⭐️**
