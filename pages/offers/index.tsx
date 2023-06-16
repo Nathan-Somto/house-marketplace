@@ -32,7 +32,6 @@ export const getServerSideProps: GetServerSideProps<{
 }> = async () => {
   // get our firestore collection
   const docRef = collection(db, "listings");
-
   //firestore query
   const q = query(
     docRef,
@@ -44,7 +43,6 @@ export const getServerSideProps: GetServerSideProps<{
   const listings: OffersData[] = [];
   try {
     const docSnap = await getDocs(q);
-
     docSnap.forEach((doc: QueryDocumentSnapshot<DocumentData>) =>{
       let timestampString: string = formatTimestamp(doc.data() as IListing);
       listings.push({
@@ -57,7 +55,6 @@ export const getServerSideProps: GetServerSideProps<{
       }
     );
   } catch (err) {
-    console.log(err);
   }
   return { props: { listings } };
 };
@@ -73,7 +70,7 @@ function OffersPage({ listings }: OffersPageProps) {
     <section className="min-h-screen px-[5%] py-6 bg-primary-grey space-y-6 text-primary-black  ">
       <h1>Offers</h1>
       {/* Listing item come here */}
-      <div className="space-y-4">
+      <div className="space-y-[2.5rem]">
         {listings.length !== 0 ? (
           listings.map(({ data, id }) => (
             <ListingItem
@@ -104,7 +101,7 @@ function OffersPage({ listings }: OffersPageProps) {
           setNewListings={
             setFetchedListings
           } /* sets the state of client fetched listings for the parent componet. */
-          field={"offers"} /* offers | rent | sale */
+          field={"offer"} /* offers | rent | sale */
         />
       )}
     </section>

@@ -14,11 +14,7 @@ function AuthLayout({children}:{children:ReactNode}) {
     const logout = useAuthStore((state)=>state.logout)
     const router = useRouter();
     useEffect(()=>{
-      console.log("checking");
-      console.log(user);
     const unSubscribe = onAuthStateChanged(auth,(user)=>{
-      console.log("checking");
-      console.log(user);
         if(user !== null){ 
           login(user);
         }
@@ -26,8 +22,7 @@ function AuthLayout({children}:{children:ReactNode}) {
         logout();
         router.push('/signup');
         }
-        setLoading(false);
-       
+        setLoading(false);  
     });
     return () => unSubscribe();
   },[]);

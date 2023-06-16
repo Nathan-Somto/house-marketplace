@@ -43,7 +43,6 @@ export const getServerSideProps: GetServerSideProps<
     id: docSnap.id,
     
   };
-
   return {
     props: {
       listing,

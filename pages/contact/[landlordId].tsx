@@ -10,29 +10,35 @@ type userData = {
   data: IUser;
 };
 type user = userData | null;
-export const getServerSideProps: GetServerSideProps<{ user: user }> = async (
+export const getServerSideProps: GetServerSideProps<{ user: user } | {notFound:boolean}> = async (
   context
 ) => {
+  try{  
   const { landlordId } = context.params as ParsedUrlQuery;
   const docRef = doc(db, "users", landlordId as string);
   const docSnap = await getDoc(docRef);
-  let user = null;
-  if (docSnap.exists()) {
-    user = {
-      data: docSnap.data() as IUser,
-    };
+  if (!docSnap.exists()) {
+    throw new Error("no user");
   }
+  let user = {
+    data: docSnap.data() as IUser,
+  };
   return {
     props: {
       user,
     },
   };
+  }
+  catch(err){
+    return {
+      notFound:true
+    }
+  }
 };
 function ContactPage({ user }: { user: user }) {
   const router = useRouter();
   const [message, setMessage] = useState("");
   const [userData, setUserData] = useState<IUser | null>(null);
-
   const { listingName } = router.query;
 
   useEffect(() => {
@@ -41,7 +47,7 @@ function ContactPage({ user }: { user: user }) {
     } else {
       setUserData({ ...user.data });
     }
-  }, []);
+  }, [user,router]);
   function sendMail() {
     if (userData === null) return;
     window.open(

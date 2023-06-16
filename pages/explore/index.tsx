@@ -9,6 +9,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
 import { db } from "@/firebase/firebase.config";
 import formatTimestamp from "@/utils/formatTimestamp";
+import Head from "next/head";
 type ExploreData = {
   data: IListing;
   id: string;
@@ -52,6 +53,10 @@ function ExplorePage({ listings }: { listings: ExploreData[] }) {
     { category: "sale", src: "/jpg/sellCategoryImage.jpg", id: 2 },
   ];
   return (
+    <>
+    <Head>
+      <title> Explore - our Large Collection of Homes</title>
+    </Head>
     <section className="px-12 md:px-8 lg:px-2 min-h-screen pt-8 pb-6 space-y-12 bg-primary-grey">
       <div className="flex items-center lg:w-[80%] mx-auto  justify-between">
         <h1>Explore</h1>
@@ -122,6 +127,7 @@ function ExplorePage({ listings }: { listings: ExploreData[] }) {
         </div>
       </div>
     </section>
+    </>
   );
 }
 

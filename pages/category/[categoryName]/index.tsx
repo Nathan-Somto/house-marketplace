@@ -16,6 +16,7 @@ import {
   where,
 } from "firebase/firestore";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { ParsedUrlQuery } from "querystring";
 import { useEffect, useState } from "react";
@@ -77,6 +78,10 @@ function CategoryPage({ listings }: CategoryPageProps) {
   }, [fetchedListings]);
 
   return (
+    <>
+    <Head>
+      <title>Find Homes for {router.query.categoryname === "rent" ? "Rent" : "Sale"}</title>
+    </Head>
     <section className="min-h-screen px-[5%] py-6 bg-primary-grey space-y-6 text-primary-black  ">
       <div>
         <h1>
@@ -84,7 +89,7 @@ function CategoryPage({ listings }: CategoryPageProps) {
         </h1>
       </div>
       {/* Listing item come here */}
-      <div className="space-y-4">
+      <div className="space-y-[2.5rem]">
         {fetchedListings.length ? (
           fetchedListings.map(({ data, id }) => (
             <ListingItem
@@ -121,6 +126,7 @@ function CategoryPage({ listings }: CategoryPageProps) {
         />
       )}
     </section>
+    </>
   );
 }
 CategoryPage.getLayout = function getLayout(page: JSX.Element) {

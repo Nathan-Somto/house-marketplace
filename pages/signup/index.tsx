@@ -39,15 +39,10 @@ function signupPage() {
       // create the user in firebase.
       const cred = await createUserWithEmailAndPassword(auth, email, password);
       // update the users profile in firebase.
-     const updated = await updateProfile(auth.currentUser as User, {
+     const updated = await updateProfile(cred.user, {
         displayName: firstName,
       });
-      console.log(auth);
-      // add the newly created user to the users firestore collection.
-      if(auth.currentUser === null || auth.currentUser.uid === undefined){
-        throw new Error('Failed to create user');
-      }
-      await setDoc(doc(db, "users", auth.currentUser.uid), {
+      await setDoc(doc(db, "users", cred.user.uid), {
         firstName,
         email,
         timestamp: serverTimestamp(),

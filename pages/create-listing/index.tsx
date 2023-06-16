@@ -17,6 +17,7 @@ import {
   uploadString,
 } from "firebase/storage";
 import { toast } from "react-toastify";
+import Head from 'next/head';
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "@/firebase/firebase.config";
 import useAuthStore from "@/store/useAuthStore";
@@ -53,15 +54,12 @@ function CreateListingPage(): JSX.Element {
 
   //Get user id | ref (whatever you want to call it) on first mount.
 
-  useEffect(() => {
-    console.log("my user",user);
-    
-      if (user) {
+  useEffect(() => { 
+     if (user) {
         setFormData({ ...formData, userRef: user.uid })
       } else {
        router.push('/signin')
       }
-  
   }, [user]);
 
   // form submission handler.
@@ -189,6 +187,9 @@ function CreateListingPage(): JSX.Element {
   }
   return (
     <>
+    <Head>
+      <title>Create A new Listing Today</title>
+    </Head>
       <section className="bg-primary-grey py-8  relative text-primary-black px-[5%]">
         <header className="mb-6 ">
           <h1 className="lg:text-4xl">Create a Listing</h1>
