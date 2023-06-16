@@ -16,7 +16,7 @@ import Spinner from "@/components/Spinner";
 import {motion}  from 'framer-motion';
 import Head from 'next/head';
 
-function signupPage() {
+function SignupPage() {
   const router = useRouter();
   const login = useAuthStore((state) => state.login);
   const {
@@ -270,4 +270,4 @@ function signupPage() {
   );
 }
 
-export default signupPage;
+export default SignupPage;

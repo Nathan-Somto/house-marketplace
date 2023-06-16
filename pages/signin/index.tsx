@@ -11,7 +11,7 @@ import { useRouter } from "next/router";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { toast } from "react-toastify";
 
-function signinPage() {
+function SigninPage() {
   const router = useRouter();
   const login = useAuthStore((state) => state.login);
   const [formData, setFormData] = useState({
@@ -173,4 +173,4 @@ function signinPage() {
   );
 }
 
-export default signinPage;
+export default SigninPage;

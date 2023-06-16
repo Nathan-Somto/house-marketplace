@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { toast } from "react-toastify";
-function forgotPasswordPage() {
+function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
     setEmail(e.target.value);
@@ -88,4 +88,4 @@ function forgotPasswordPage() {
   );
 }
 
-export default forgotPasswordPage;
+export default ForgotPasswordPage;
