@@ -29,7 +29,7 @@ function GoogleAuth({pathname}:props) {
         }
         // login the user in our global store.
         login(cred.user);
-        router.replace('/explore');
+        router.replace('/welcome');
         
       } catch (error) {
         let message = "there was an error while trying login";

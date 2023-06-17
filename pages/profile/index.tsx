@@ -90,9 +90,13 @@ function ProfilePage() {
     fetchUserListings();
   }, [user]);
   async function onLogout() {
-    await signOut(auth);
-    router.replace("/");
-    logout();
+    try{
+      await signOut(auth);
+      logout();
+    }
+    catch(err){
+      toast.error("failed to log out");
+    }
   }
   async function onSubmit() {
     const { name, email } = formData;
@@ -168,7 +172,7 @@ function ProfilePage() {
   <Head>
     <title>{formData.name} -  Profile</title>
   </Head>
-    <section className="px-8  md:px-[10%] pt-[5%] min-h-screen w-full text-gray-800 bg-primary-grey">
+    <section className="px-8 pb-[5%] md:px-[10%] pt-[5%] md:pb-0 min-h-screen w-full text-gray-800 bg-primary-grey">
       <div className="mb-[5rem] flex items-center justify-between">
         <h1 className="text-2xl md:text-4xl">
           Welcome{" "}

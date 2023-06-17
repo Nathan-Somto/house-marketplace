@@ -31,16 +31,7 @@ function AuthLayout({children}:{children:ReactNode}) {
   {
     return <Spinner/>;
   }
-  if(user === null){
-    return (
-      <main className="bg-red-500 h-screen grid text-primary-white place-items-center">
-        <h1>You cannot access this page login</h1>
-        <Link href="/signin">Login</Link>
-      </main>
-    )
-  }
-
-  
+   
   return (
     <>
     <Navbar/>

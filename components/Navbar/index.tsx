@@ -24,7 +24,7 @@ function NavBar() {
                 </svg>
           </span><span>marketplace</span>
       </h4>
-      <ul className="flex space-x-8 items-center justify-center md:space-x-0 md:flex-col md:justify-start md:items-start md:space-y-4 md:mt-[50px] w-full">
+      <ul className="flex space-x-12 items-center justify-center md:space-x-0 md:flex-col md:justify-start md:items-start md:space-y-4 md:mt-[50px] w-full">
         <li className="md:hover:bg-gray-300 md:w-full md:px-3 md:rounded-md md:flex md:py-2">
           <Link
             href="/explore"

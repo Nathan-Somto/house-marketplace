@@ -46,7 +46,7 @@ function Testimonals({ testimonials }: props) {
                     exit={{ x: "100%" }}
                     transition={{ duration: 0.85 }}
                   >
-                    <p className=" text-lg"> &ldquo{testimonal.quote}&rdquo</p>
+                    <p className=" text-lg">{`"${testimonal.quote}"`}</p>
                     <div className="flex space-x-5 items-center">
                       <Image
                         width={60}
