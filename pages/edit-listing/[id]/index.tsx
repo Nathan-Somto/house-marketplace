@@ -131,7 +131,7 @@ function EditListingPage({ listing }: { listing: IListing }) {
       // no need to geocode if it is the old city.
       if (formData.city !== oldCity.current) {
         const res = await fetch(
-          `http://api.openweathermap.org/geo/1.0/direct?q=${formData.city}&limit=1&appid=${process.env.NEXT_PUBLIC_GEOCODE_KEY}`
+          `https://api.openweathermap.org/geo/1.0/direct?q=${formData.city}&limit=1&appid=${process.env.NEXT_PUBLIC_GEOCODE_KEY}`
         );
         const data: geoData[] | [] | null = await res.json();
         if (data !== null && data.length > 0) {
