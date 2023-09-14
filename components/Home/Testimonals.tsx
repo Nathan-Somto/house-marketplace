@@ -23,12 +23,12 @@ function Testimonals({ testimonials }: props) {
           className="h-[600px] w-[450px] hidden relative lg:block rounded-md overflow-hidden"
         >
           <Image
-            src="/homeInterior.jpg"
+            src="/testimonial.jpeg"
             alt="testimonal image"
             fill
-            className="bg-cover"
+            className="object-cover"
           />
-          <div className="h-full w-full absolute z-[20] bg-[rgba(0,0,0,0.5)] top-0"></div>
+          <div className="h-full w-full absolute z-[20] bg-[rgba(0,0,0,0.35)] top-0"></div>
         </div>
         <div
           data-aos="zoom-in"
