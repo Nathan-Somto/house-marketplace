@@ -11,12 +11,13 @@ type LoadData = {
   };
 type field = "offer"| "rent"| "sale"
 type props={
-    lastItem:LoadData;
+    lastItem:QueryDocumentSnapshot<DocumentData> | string;
     setNewListings:Dispatch<SetStateAction<LoadData[]>>;
+    setLastListing:Dispatch<SetStateAction<QueryDocumentSnapshot<DocumentData> | null>>;
     field:field;
 }
 
-function LoadMore({lastItem, setNewListings, field}:props):JSX.Element{
+function LoadMore({lastItem, setNewListings, field, setLastListing}:props):JSX.Element{
   const [loading, setLoading] = useState(false);
   async function handleLoadMore() {
         setLoading(true);
@@ -24,7 +25,6 @@ function LoadMore({lastItem, setNewListings, field}:props):JSX.Element{
         const docRef = collection(db, "listings");
         let whereField = field === "offer" ? field : "type";
         let clientField = field === "offer" ? true : field === "rent" ? field : "sale";
-       
   //firestore query
   const q = query(
     docRef,
@@ -36,7 +36,9 @@ function LoadMore({lastItem, setNewListings, field}:props):JSX.Element{
   // fetch data from firebase.
   const docSnap = await getDocs(q);
   const listings: LoadData[] = [];
-
+  const lastVisible = docSnap.docs[docSnap.docs.length - 1];
+  setLastListing(lastVisible);
+  console.log('last lisitng', lastVisible)
   
   docSnap.forEach((doc: QueryDocumentSnapshot<DocumentData>) =>{
   let timestampString: string = formatTimestamp(doc.data() as IListing);
@@ -48,9 +50,8 @@ function LoadMore({lastItem, setNewListings, field}:props):JSX.Element{
     },
   })
   }
-);
-  console.log(listings)
-    setNewListings(prevState=>([...prevState, ...listings]));
+  );
+    setNewListings(prevState=> [...prevState, ...listings]);
     } catch (err) {
         toast.error("Could not fetch more listings.");
     }

@@ -1,13 +1,13 @@
 import AuthLayout from "@/components/AuthLayout";
 import ListingItem from "@/components/ListingItem";
 import LoadMore from "@/components/LoadMore";
+import Spinner from "@/components/Spinner";
 import { db } from "@/firebase/firebase.config";
 import { IListing } from "@/types";
 import formatTimestamp from "@/utils/formatTimestamp";
 import {
   DocumentData,
   QueryDocumentSnapshot,
-  Timestamp,
   collection,
   getDocs,
   limit,
@@ -15,64 +15,64 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import { GetServerSideProps } from "next";
-import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 
 type OffersData = {
   id: string;
   data: IListing;
 };
+function OffersPage() {
+  const [fetchedListings, setFetchedListings] = useState<OffersData[] >([]);
+  const [lastListing, setLastListing] =
+    useState<QueryDocumentSnapshot<DocumentData> | null>(null);
+    const [loading, setLoading] = useState(false);
+    useEffect(()=>{
+      async function getListings() {
+        setLoading(true)
+        try {
+          const docRef = collection(db, "listings");
 
-type OffersPageProps = {
-  listings: OffersData[];
-};
-export const getServerSideProps: GetServerSideProps<{
-  listings: OffersData[];
-}> = async () => {
-  // get our firestore collection
-  const docRef = collection(db, "listings");
-  //firestore query
-  const q = query(
-    docRef,
-    where("offer", "==", true),
-    orderBy("timestamp", "desc"),
-    limit(5)
-  );
-  // fetch data from firebase.
-  const listings: OffersData[] = [];
-  try {
-    const docSnap = await getDocs(q);
-    docSnap.forEach((doc: QueryDocumentSnapshot<DocumentData>) =>{
-      let timestampString: string = formatTimestamp(doc.data() as IListing);
-      listings.push({
-        id: doc.id,
-        data: {
-          ...(doc.data() as IListing),
-          timestamp: timestampString
-        },
-      })
+      //firestore query
+      const q = query(
+        docRef,
+        where("offer", "==", true),
+        orderBy("timestamp", "desc"),
+        limit(5)
+      );
+      // fetch data from firebase.
+      const docSnap = await getDocs(q);
+      const listings: OffersData[] = [];
+      const lastVisible = docSnap.docs[docSnap.docs.length - 1];
+      docSnap.forEach((doc: QueryDocumentSnapshot<DocumentData>) => {
+        let timestampString: string = formatTimestamp(doc.data() as IListing);
+        listings.push({
+          id: doc.id,
+          data: {
+            ...(doc.data() as IListing),
+            timestamp: timestampString,
+          },
+        });
+      });
+      setFetchedListings(listings);
+      setLastListing(lastVisible);
+        }catch(err){
+        }finally{
+          setLoading(false)
+        }
       }
-    );
-  } catch (err) {
+      getListings()
+    }, [])
+   if(loading)
+  {
+    return <Spinner/>;
   }
-  return { props: { listings } };
-};
-function OffersPage({ listings }: OffersPageProps) {
-  const [lastListing, setLastListing] = useState<OffersData | null>(null);
-  const [fetchedListings, setFetchedListings] = useState(listings);
-  useEffect(() => {
-    if (fetchedListings.length !== 0) {
-      setLastListing(fetchedListings[fetchedListings.length - 1]);
-    }
-  }, [fetchedListings]);
   return (
     <section className="min-h-screen px-[5%] py-6 bg-primary-grey space-y-6 text-primary-black  ">
       <h1>Offers</h1>
       {/* Listing item come here */}
       <div className="space-y-[2.5rem]">
-        {listings.length !== 0 ? (
-          listings.map(({ data, id }) => (
+        {fetchedListings.length !== 0 ? (
+          fetchedListings.map(({ data, id }) => (
             <ListingItem
               bathrooms={data.bathrooms}
               bedrooms={data.bedrooms}
@@ -95,6 +95,7 @@ function OffersPage({ listings }: OffersPageProps) {
 
       {lastListing && (
         <LoadMore
+          setLastListing={setLastListing}
           lastItem={
             lastListing
           } /* the last item to begin client data fetching gotten from the parent component. */
