@@ -34,7 +34,7 @@ function ListingItem({
   return (
     <Link
       href={`/category/${type}/${id}`}
-      className="flex relative space-x-2 w-full items-center mb-8 h-[130px] text-black lg:h-[250px]"
+      className="flex relative space-x-2 w-full items-center mb-8 min-h-[130px] text-black lg:min-h-[250px]"
     >
       <figure className="relative w-[30%] lg:w-[20%] group overflow-hidden h-[130px] lg:h-[250px] mr-5 rounded-3xl p-0">
         <Image
